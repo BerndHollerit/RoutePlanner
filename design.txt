@@ -1,0 +1,358 @@
+////////////////////////////////////////////////////////////////////
+// Filename: design.txt                                           //
+// Version: 2.0                                                   //
+// Authors: Hollerit, Pendl                                       //
+// Description: The file is the source code for the second        //
+// exercise. It defines a structure that represents a graph.      //
+// All functions needed to edit the graph are included.           //
+////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////
+//           Refactoring des 2. Übungsbeispiels                   //
+////////////////////////////////////////////////////////////////////
+
+Unser Grundmodell besteht aus 2 getrennten Structures:
+
+1) Eine struct Node_
+Sie enthält drei Elemente: current, previous, und start. Diese 
+wiederum sind Elemente des Typs struct NodeElement_.
+Die struct NodeElement_ enthält ein NodeElement *next und einen 
+char *name.
+  
+  struct NodeElement_
+{
+  char *name;
+  struct NodeElement_ *next;
+};
+
+typedef struct NodeElement_ NodeElement;
+
+struct Node_
+{
+  NodeElement *current;
+  NodeElement *previous;
+  NodeElement *start;
+};
+
+typedef struct Node_ Node;
+
+und 2)
+eine struct Edge.
+Sie enthält wieder die drei Elemente: current, previous, und 
+start. 
+Diese sind vom Typ struct EdgeElement_.
+Die struct EdgeElement_ enthält ein EdgeElement *next und die 
+drei char*: name, source und destination.
+  
+struct EdgeElement_
+{
+  char *name;
+  struct EdgeElement_ *next;
+  char *source;
+  char *destination;
+};
+
+typedef struct EdgeElement_ EdgeElement;
+
+struct Edge_
+{
+  EdgeElement *current;
+  EdgeElement *previous;
+  EdgeElement *start;
+};
+
+typedef struct Edge_ Edge;
+
+//------------------------------------------------------------------
+
+Um die geforderten Aufgabestellungen erfüllen zu können werden wir 
+folgende Funktionen Implementieren:
+
+void createEmptyNodeList(Node *new_node);
+void createEmptyEdgeList(Edge *new_edge);
+int equal(char *entry1, char *entry2);
+int outOfNodeList(Node *new_node);
+int outOfEdgeList(Edge *new_edge);
+int proceedNodeList(Node *new_node);
+int proceedEdgeList(Edge *new_edge);
+void setNodeToStart(Node *new_node);
+void setEdgeToStart(Edge *new_edge);
+int printNodeList(Node new_node);
+void insertNode(Node *new_node, char *node_name);
+void insertEdge(Edge *new_edge, char *edge_name, char *source, 
+     char *destination);
+void searchNode(Node *new_node, char *entry);
+void searchEdgeSource(Edge *new_edge, char *entry);
+void searchEdgeDestination(Edge *new_edge, char *entry);
+int deleteEdgeElement(Edge *new_edge);
+int deleteNodeElement(Node *new_node);
+int readLine(char *str,unsigned max_strlen);
+void addNode(Node *new_node);
+void deleteNode(Node *new_node, Edge *new_edge);
+void addEdge(Edge *new_edge, Node *new_node);
+void deleteEdge(Edge *new_edge);
+void printEdge(Node *new_node, Edge *new_edge);
+void handleCommand(Node *new_node, Edge *new_edge, 
+     char *test_string);
+int findPath(Edge *new_edge, char *source, char *destination);
+int printPath(Node *new_node, Edge *new_edge);
+
+//------------------------------------------------------------------
+
+void createEmptyList(Node *new_node)
+
+Sie allokiert zuerst Speicherplatz der Größe 
+(sizeof(Node)*MAX_STR_LEN).
+Und setzt dann alle Elemente auf NULL.
+Anm: Wir haben die maximale Eingabelänge MAX_STR_LEN auf 64 Zeichen 
+begrenzt.
+
+//------------------------------------------------------------------
+
+void createEmptyList(Node *new_node)
+
+Sie allokiert zuerst wieder Speicherplatz der Größe 
+(sizeof(Edge)*MAX_STR_LEN).
+Und setzt dann alle Elemente auf NULL.
+
+//------------------------------------------------------------------
+
+int equal(char *entry1, char *entry2)
+
+sie überprüft zwei strings mittels strcmp und liefert für den Fall, 
+dass entry1 gleich entry2 ist 1; und andernfalls 0.
+
+//------------------------------------------------------------------
+
+int outOfNodeList(Node *new_node)                                   
+
+Sie liefert den returnWert: return (new_node->current == NULL);
+
+//------------------------------------------------------------------
+
+int outOfEdgeList(Edge *new_edge)
+  
+Sie liefert den returnWert: return (new_edge->current == NULL);
+
+//------------------------------------------------------------------
+
+int proceedNodeList(Node *new_node)
+
+Sie dient dazu in unserer Liste ein Element weiter zu "springen".
+Um dies zu erreichen lässt sie current auf next von current zeigen 
+und previous auf current.
+
+Für den Fall dass current gleich NULL ist wird abgebrochen.
+
+//------------------------------------------------------------------
+
+int proceedEdgeList(Edge *new_edge)
+
+Sie dient dazu in unserer Liste ein Element weiter zu "springen".
+Um dies zu erreichen lässt sie current auf next von current zeigen 
+und previous auf current.
+
+Für den Fall dass current gleich NULL ist wird abgebrochen.
+
+//------------------------------------------------------------------
+
+void setNodeToStart(Node *new_node)
+
+Dient dazu zum Start der Liste zurückzuspringen.
+Dazu wird current auf start gesetzt und previous auf NULL.
+
+//------------------------------------------------------------------
+
+void setEdgeToStart(Node *new_node)
+
+Dient dazu zum Start der Liste zurückzuspringen.
+Dazu wird current auf start gesetzt und previous auf NULL.
+
+//------------------------------------------------------------------
+
+int printNodeList(Node new_node)
+
+Sie setzt mittels setNodeToStart auf den Anfang zurück.
+Es wird der Name des aktuellen Elements geprintet und danach 
+mittels proceedNodeList um ein Element weiter "gesprungen".
+
+Für den Fall, dass start Null ist wird sofort abgebrochen.
+
+//------------------------------------------------------------------
+
+void insertNode(Node *new_node,char *node_name)
+
+Sie allokiert zuerst den für einen zusätzlichen node notwendigen 
+Speicherplatz für *new_new_node. Für den (unwahrscheinlichen) Fall, 
+dass der Speicher ausgehen sollte wird das Programm sofort beendet.
+Es wird new_new_node als name der übergebene der node_name 
+zugewiesen. Für den Fall, dass current NULL ist. wird 
+new_new_node->next  auf NULL gesetzt. Für den Fall, dass current 
+gleich start ist wir start auf new_new_node gesetzt und 
+new_node->start->next auf current gesetzt. Andernfalls wird 
+new_node->previous->next auf new_new_node gesetzt.
+
+//------------------------------------------------------------------
+
+void insertEdge(Edge *new_edge, char *edge_name, char *source,
+     char *destination)
+
+Äquivalent zu insertNode, außer dass die char* edge_name, source 
+und destination übergeben werden. Natürlich passiert das ganze in 
+der Edge Liste.
+
+//------------------------------------------------------------------
+
+void searchNode(Node *new_node, char *entry)
+
+Es wird mittels setNodeToStart zum start zurückgesetzt.
+Danach wird solange equal und outOfList keinen true return liefern 
+mittels proceedNodeList ein Element weiter gesprungen. Wird ein 
+Element gefunden bricht die Funktion ab und current zeigt somit auf 
+das Element in dem der gesuchte Wert zuu finden ist.
+
+//------------------------------------------------------------------
+
+void searchEdgeSource(Edge *new_edge, char *entry)
+
+Sucht nach Edge source.
+Es wird solange equal und outOfList keinen true return liefern 
+mittels proceedNodeList ein Element weiter gesprungen.
+Wird ein Element gefunden bricht die Funktion ab und current zeigt 
+somit auf das Element in dem der gesuchte Wert zu finden ist.
+
+//------------------------------------------------------------------
+
+void searchEdgeDestination(Edge *new_edge, char *entry)
+
+Sucht nach Edge destination.
+Es wird solange equal und outOfList keinen true return liefern 
+mittels proceedNodeList ein Element weiter gesprungen. Wird ein 
+Element gefunden bricht die Funktion ab und current zeigt somit auf 
+das Element in dem der gesuchte Wert zu finden ist.
+
+//------------------------------------------------------------------
+
+int deleteEdgeElement(Edge *new_edge)
+
+Für den Fall, dass current gleich NULL wird abgebrochen.
+Für den fall, dass current Start entspricht wird start auf current 
+next umgezeigt.
+Andernfalls wird previous->next auf current->next umgezeigt.
+Danach wird current freigegeben und auf NULL gesetzt.
+
+//------------------------------------------------------------------
+
+int deleteNodeElement(Node *new_node)
+
+Äquivalent zu deleteEdgeElement.
+
+//------------------------------------------------------------------
+
+int readLine(char *str,unsigned max_strlen)
+
+Sie liest char solange ein bis ein '\0' als Eingabe kommt und 
+speichert sie im *str ab.
+
+//------------------------------------------------------------------
+
+void addNode(Node *new_node)
+
+Sie macht eine Eingabeaufforderung.
+Es wird mittels searchNode und outOfNodeList überprüft ob der Node 
+existiert. Falls der Node schon existiert wird eine entsprechende 
+Fehlermeldung ausgegeben. Andernfalls wird der node mittels 
+insertNode eingefügt.
+
+//------------------------------------------------------------------
+
+void deleteNode(Node *new_node, Edge *new_edge)
+
+Es wird eine Eingabeaufforderung getätigt.
+Mittels searchNode und outOfNodeList wird überprüft ob der zu 
+löschende node existiert. Falls nicht wird eine entsprechende 
+Fehlermeldung ausgegeben. Andernfalls wird der Knoten mittels 
+deleteNode gelöscht. Danach wird in der edge struct gesucht ob 
+entweder die source oder die destination einer Kante dem zu 
+löschenden Knoten entspricht. Im Falle, dass dies so ist wird die 
+Kante umgehend mittels deleteEdge gelöscht und das ganze solange 
+fortgesetzt, bis outOfEdgeList eine true returnWert liefert.
+
+//------------------------------------------------------------------
+
+void addEdge(Edge *new_edge, Node *new_node)
+
+Es wird wieder eine Eingabeaufforderung getätigt.
+Danach wird überprüft, ob alle Parameter ihre Richtigkeit haben: das 
+heißt ob der Kantenname noch nicht vorhanden ist und ob der source 
+bzw. der destinationnode vorhanden sind.
+Danach wird mittels insertEdge der edge eingefügt.
+
+//------------------------------------------------------------------
+
+void deleteEdge(Edge *new_edge)
+
+Es wird wieder eine Eingabeaufforderung getätigt.
+Danach wird überprüft, ob alle Parameter ihre Richtigkeit haben: 
+das heißt ob der Kantenname, source bzw. der destinationnode 
+vorhanden sind. Wenn nicht wird eine entsprechende Fehlermeldung 
+ausgegeben. Andernfalls wird mittels deleteEdgeElement die Kante 
+gelöscht.
+
+//------------------------------------------------------------------
+
+void printEdge(Node *new_node, Edge *new_edge)
+
+Es wird wieder eine Eingabeaufforderung getätigt.
+Es wird überprüft, ob der eingegebene Knoten überhaupt existiert.
+Wenn nicht wird eine Fehlermeldung ausgegeben.
+Andernfalls wird mittels searchEdgeSource und searchEdgeDestination 
+die dazugehörigen Kanten gefunden und je nach Beziehung mit ->, <- 
+oder <-> geprintet.
+
+//-----------------------------------------------------------------
+
+void handleCommand(Node *new_node, Edge *new_edge, 
+                   char *test_string)
+
+handleCommand überprüft die User-Eingaben mittels String-Compare 
+und leitet das Programm zu den entsprechenden Funktionen weiter.
+
+////////////////////////////////////////////////////////////////////
+//                         Routenplaner                           //
+////////////////////////////////////////////////////////////////////
+
+int findPath(Edge *new_edge, char* source, char *destination)
+ist eine rekursive Funktion. Sie sucht den eingegebenen 
+destinationnode in den edge destinations, danach wird der source 
+dieser Kanter wieder als destination für die nächste angegeben. 
+Abgebrochen wird nur, wenn bei einer Kante die source der gesuchten 
+source entspricht. Wenn ein richtiger Pfad gefunden wird, wird 
+geprintet und danach abgebrochen. Auch wenn kein richtiger Pfad 
+gefunden wird, wird abgebrochen.
+
+//------------------------------------------------------------------
+int printPath(Node *new_node, Edge *new_edge)
+
+Diese Funktion allokiert anfangs Speicher für die source und die 
+destination, danach werden diese mittels readLine eingelesen. Jetzt 
+wird gesucht, ob die beiden Nodes überhaupt existieren - existiert 
+zumindest eine nicht, wird eine Fehlermeldung ausgegeben. Danach wird 
+die Edgeliste von Anfang an mittels findPath durchsucht - gibt es 
+keinen Pfad, wird eine Fehlermeldung ausgesucht, ansonsten übernimmt 
+findPath die Ausgabe des Pfades. Zum Schluss werden die gebrauchten 
+Knoten wieder gefreet.
+
+////////////////////////////////////////////////////////////////////
+//                           Makefile                             //
+////////////////////////////////////////////////////////////////////
+
+Unsere Funktion ist wie folgt untergliedert:
+graph_structures, welche die Structures für die Nodes, Edges und 
+Konstanten hält. Danach functions inkludieren graph_structures und 
+beinhalten alle Funktionen, die wir für die Nodes und Edges brauchen.
+Der command_handler inkludiert die functions und besteht aus der 
+Funktion handleCommand, die den User Input verarbeitet. Schließlich 
+haben wir noch die main, die den command_handler inkludiert und das 
+Programm so lange ausführt, bis abgebrochen wird.
+
